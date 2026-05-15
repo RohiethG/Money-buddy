@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Money Buddy - Financial Reports</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg-color: #175d65;
+      --bg-gradient: none;
+      --card-bg: rgba(10, 30, 35, 0.4);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --accent-green: #34d399;
+      --accent-red: #f87171;
+      --accent-yellow: #fbbf24;
+      --primary: #3b82f6;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background: var(--bg-color);
+      color: var(--text-main);
+      text-align: center;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Sidebar Minimized */
+    .sidebar {
+      width: 80px;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-right: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: fixed;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+    .sidebar .logo {
+      padding: 30px 0;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .sidebar .logo a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .sidebar .logo img { width: 36px; height: 36px; }
+    .sidebar .links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 15px;
+    }
+    .sidebar .links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 1.6rem;
+      border-radius: 14px;
+      transition: all 0.3s ease;
+    }
+    .sidebar .links a:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      transform: translateY(-2px);
+    }
+    .sidebar .links a.active {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.1);
+    }
+    .sidebar .links a.logout-link {
+      margin-top: 20px;
+      color: var(--accent-red);
+    }
+    .sidebar .links a.logout-link:hover {
+      background: rgba(248, 113, 113, 0.15);
+      color: #fca5a5;
+    }
+    .main-content {
+      margin-left: 80px;
+      padding: 20px 40px 40px;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 40px;
+      letter-spacing: -1px;
+    }
+
+    /* Summary Cards */
+    .summary-cards {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
+    }
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 20px;
+      min-width: 220px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      border: 1px solid var(--card-border);
+      text-align: left;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 10px;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255,255,255,0.3);
+    }
+    .card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 0;
+    }
+    .card p {
+      font-size: clamp(1.2rem, 3.5vw, 2.2rem);
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: -1px;
+      white-space: nowrap;
+      line-height: 1.1;
+    }
+    .card.income p { color: var(--accent-green); }
+    .card.expense p { color: var(--accent-red); }
+    .card.balance p { color: var(--accent-yellow); }
+    .card.savings p { color: var(--primary); }
+
+    /* Charts */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    .chart-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-card:hover {
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    .chart-card h4 {
+      font-size: 1.2rem;
+      margin: 0 0 25px 0;
+      color: var(--text-main);
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .chart-container {
+      position: relative;
+      height: 350px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 50px;
+    }
+    .btn {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn.primary {
+      background: var(--primary);
+      border: none;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+    .btn:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+    }
+    .btn.primary:hover {
+      background: #2563eb;
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+    }
+
+    footer {
+      padding: 25px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--card-border);
+      background: rgba(15, 23, 42, 0.2);
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">
+      <a href="/" title="MoneyBuddy">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+      </a>
+    </div>
+    <ul class="links">
+      <li>
+        <a href="/" title="Dashboard">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        </a>
+      </li>
+      <li>
+        <a href="/report" class="active" title="Reports">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+        </a>
+      </li>
+      <li>
+        <a href="/history" title="History">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        </a>
+      </li>
+      <li>
+        <a href="/settings" title="Settings">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </a>
+      </li>
+      <li>
+        <a href="/logout" class="logout-link" title="Logout">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+
+  <div class="container">
+    <div class="page-title">Analytics & Intelligence</div>
+
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="card income">
+        <h3>Total Income</h3>
+        <p>₹{{ "{:,.0f}".format(total_income or 0) }}</p>
+      </div>
+      <div class="card expense">
+        <h3>Total Expense</h3>
+        <p>₹{{ "{:,.0f}".format(total_expense or 0) }}</p>
+      </div>
+      <div class="card balance">
+        <h3>Net Balance</h3>
+        <p>₹{{ "{:,.0f}".format(net_balance or 0) }}</p>
+      </div>
+      <div class="card savings">
+        <h3>Total Savings</h3>
+        <p>₹{{ "{:,.0f}".format((total_income or 0) - (total_expense or 0)) }}</p>
+      </div>
+    </div>
+
+    <!-- Charts Grid -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h4>Distribution Overview</h4>
+        <div class="chart-container">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h4>Weekly Expense Flow</h4>
+        <div class="chart-container">
+          <canvas id="weeklyChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h4>Monthly Trends</h4>
+        <div class="chart-container">
+          <canvas id="monthlyChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h4>Yearly Overview</h4>
+        <div class="chart-container">
+          <canvas id="yearlyChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <button class="btn" onclick="window.location.href='/'">Dashboard</button>
+      <button class="btn primary" onclick="window.location.href='/export-pdf'">Export as PDF</button>
+      <button class="btn" style="background: var(--accent-green); color: black;" onclick="window.location.href='/export-csv'">Export as CSV</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Money Buddy. Designed for clarity.</p>
+  </footer>
+
+  <!-- Charts Script -->
+  <script>
+    const incomeData = JSON.parse('{{ income_data|default([])|tojson|safe }}');
+    const expenseData = JSON.parse('{{ expense_data|default([])|tojson|safe }}');
+    const weeklyLabels = JSON.parse('{{ weekly_labels|default([])|tojson|safe }}');
+    const weeklyExpense = JSON.parse('{{ weekly_expense|default([])|tojson|safe }}');
+    const monthlyLabels = JSON.parse('{{ monthly_labels|default([])|tojson|safe }}');
+    const monthlyIncome = JSON.parse('{{ monthly_income|default([])|tojson|safe }}');
+    const monthlyExpense = JSON.parse('{{ monthly_expense|default([])|tojson|safe }}');
+    const yearlyLabels = JSON.parse('{{ yearly_labels|default([])|tojson|safe }}');
+    const yearlyExpense = JSON.parse('{{ yearly_expense|default([])|tojson|safe }}');
+
+    const totalIncome = Number('{{ total_income or 0 }}');
+    const totalExpense = Number('{{ total_expense or 0 }}');
+    const totalSavings = totalIncome - totalExpense;
+
+    // Apply global font settings mimicking professional dashboard aesthetics
+    Chart.defaults.color = '#cbd5e1';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.size = 13;
+    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(15, 23, 42, 0.9)';
+    Chart.defaults.plugins.tooltip.titleColor = '#f8fafc';
+    Chart.defaults.plugins.tooltip.bodyColor = '#cbd5e1';
+    Chart.defaults.plugins.tooltip.padding = 12;
+    Chart.defaults.plugins.tooltip.cornerRadius = 8;
+    
+    // Grid line styling
+    const gridOptions = {
+        color: 'rgba(255,255,255,0.05)',
+        drawBorder: false
+    };
+
+    // Helper: format y-axis nicely
+    function formatYAxis(maxValue) {
+      if(maxValue === 0) return { beginAtZero: true };
+      const step = Math.ceil(maxValue / 5 / 100) * 100; 
+      return { 
+        beginAtZero: true, 
+        grid: gridOptions,
+        ticks: { maxTicksLimit: 6 }
+      };
+    }
+
+    // Pie Chart
+    new Chart(document.getElementById('pieChart'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Income', 'Expense', 'Savings'],
+        datasets: [{
+          data: [totalIncome, totalExpense, totalSavings],
+          backgroundColor: ['#10b981', '#ef4444', '#3b82f6'],
+          borderWidth: 0,
+          hoverOffset: 10,
+          borderRadius: 5,
+          spacing: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '78%',
+        animation: { duration: 2000, easing: 'easeOutQuint' },
+        plugins: {
+          legend: { position: 'bottom', labels: { padding: 25, usePointStyle: true, pointStyle: 'circle' } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let label = context.label || '';
+                if (label) { label += ': '; }
+                label += '₹' + context.formattedValue;
+                return label;
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Weekly Chart
+    new Chart(document.getElementById('weeklyChart'), {
+      type: 'bar',
+      data: {
+        labels: weeklyLabels,
+        datasets: [{
+          label: 'Expenses',
+          data: weeklyExpense,
+          backgroundColor: '#f59e0b',
+          borderRadius: 6,
+          barPercentage: 0.6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 1500, easing: 'easeOutQuart' },
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: formatYAxis(Math.max(...(weeklyExpense.length ? weeklyExpense : [100])))
+        }
+      }
+    });
+
+    // Monthly Chart
+    new Chart(document.getElementById('monthlyChart'), {
+      type: 'line',
+      data: {
+        labels: monthlyLabels,
+        datasets: [
+          {
+            label: 'Income',
+            data: monthlyIncome,
+            borderColor: '#34d399',
+            backgroundColor: 'rgba(52, 211, 153, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+            borderWidth: 3
+          },
+          {
+            label: 'Expense',
+            data: monthlyExpense,
+            borderColor: '#f87171',
+            backgroundColor: 'rgba(248, 113, 113, 0.1)',
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointHoverRadius: 6,
+            borderWidth: 3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        plugins: {
+          legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } }
+        },
+        scales: {
+          x: { grid: { display: false } },
+          y: formatYAxis(Math.max(...(monthlyIncome.length ? monthlyIncome : [0]), ...(monthlyExpense.length ? monthlyExpense : [100])))
+        }
+      }
+    });
+
+    // Yearly Chart
+    new Chart(document.getElementById('yearlyChart'), {
+      type: 'bar',
+      data: {
+        labels: yearlyLabels,
+        datasets: [{
+          label: 'Total Expenses',
+          data: yearlyExpense,
+          backgroundColor: '#a855f7',
+          borderRadius: 8,
+          barPercentage: 0.5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: formatYAxis(Math.max(...(yearlyExpense.length ? yearlyExpense : [100])))
+        }
+      }
+    });
+  </script>
+  </main>
+</body>
+</html>

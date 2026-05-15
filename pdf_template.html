@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Financial Report</title>
+    <style>
+        body { font-family: Helvetica, Arial, sans-serif; padding: 30px; color: #333; }
+        .header { text-align: center; border-bottom: 2px solid #175d65; padding-bottom: 20px; margin-bottom: 30px; }
+        h1 { color: #175d65; margin: 0 0 10px 0; font-size: 28px; }
+        .summary-table { width: 100%; margin-bottom: 40px; border: none; }
+        .summary-table td { text-align: center; padding: 25px; background: #f8f9fa; border-radius: 8px; border: none; }
+        .summary-title { color: #666; font-size: 14px; text-transform: uppercase; margin: 0 0 10px 0; font-weight: bold; }
+        .summary-value { font-size: 26px; font-weight: bold; margin: 0; }
+        .income { color: #10b981; }
+        .expense { color: #ef4444; }
+        .balance { color: #f59e0b; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #175d65; color: white; font-weight: bold; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #888; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Money Buddy - Financial Report</h1>
+        <p style="color: #666; margin: 0;">Prepared for: <strong>{{ username }}</strong></p>
+    </div>
+
+    <table class="summary-table">
+        <tr>
+            <td>
+                <p class="summary-title">Total Income</p>
+                <p class="summary-value income">₹{{ "{:,.2f}".format(total_income|default(0)) }}</p>
+            </td>
+            <td>
+                <p class="summary-title">Total Expense</p>
+                <p class="summary-value expense">₹{{ "{:,.2f}".format(total_expense|default(0)) }}</p>
+            </td>
+            <td>
+                <p class="summary-title">Net Balance</p>
+                <p class="summary-value balance">₹{{ "{:,.2f}".format(net_balance|default(0)) }}</p>
+            </td>
+        </tr>
+    </table>
+
+    <h3 style="color: #175d65; border-bottom: 1px solid #eee; padding-bottom: 10px;">Transaction History</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Amount (₹)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.description }}</td>
+                <td>{{ row.category }}</td>
+                <td style="color: {{ '#10b981' if row.type == 'income' else '#ef4444' }}; font-weight: bold;">
+                    {{ row.type|capitalize }}
+                </td>
+                <td>{{ "{:,.2f}".format(row.amount) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" style="text-align: center; color: #888;">No transactions found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>&copy; 2026 Money Buddy. Automatically generated report.</p>
+    </div>
+</body>
+</html>

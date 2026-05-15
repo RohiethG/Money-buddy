@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Money Buddy - Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    .login-container {
+      text-align: center;
+      background: #1e1e1e;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 255, 150, 0.5);
+      width: 350px;
+    }
+    .login-container img {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+    .login-container h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #00ff96;
+    }
+    .login-container h3 {
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+    .login-container form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .login-container input {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+    }
+    .login-container button {
+      padding: 12px;
+      background: #00ff96;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .login-container button:hover {
+      background: #00cc7a;
+    }
+    .login-container p {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .login-container a {
+      color: #00ff96;
+      text-decoration: none;
+    }
+    .login-container a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <!-- ✅ Add logo here -->
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Money Buddy Logo">
+    <h2>Money Buddy</h2>
+    <h3>Login</h3>
+    <form method="POST">
+      <input type="text" name="username" placeholder="Username" required>
+      
+      <!-- ✅ Strong Password Rule -->
+      <input type="password" 
+             name="password" 
+             placeholder="Password" 
+             required>
+      
+      <button type="submit">Login</button>
+    </form>
+    <p>Don't have an account? <a href="/signup">Sign up</a></p>
+  </div>
+</body>
+</html>

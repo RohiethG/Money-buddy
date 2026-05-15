@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Money Buddy - Signup</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #121212;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+    .signup-container {
+      text-align: center;
+      background: #1e1e1e;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 255, 150, 0.5);
+      width: 350px;
+    }
+    .signup-container img {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+    .signup-container h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #00ff96;
+    }
+    .signup-container h3 {
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+    .signup-container form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .signup-container input {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      font-size: 14px;
+    }
+    .signup-container button {
+      padding: 12px;
+      background: #00ff96;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .signup-container button:hover {
+      background: #00cc7a;
+    }
+    .signup-container p {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .signup-container a {
+      color: #00ff96;
+      text-decoration: none;
+    }
+    .signup-container a:hover {
+      text-decoration: underline;
+    }
+    .quote {
+      margin-top: 20px;
+      font-size: 14px;
+      font-style: italic;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <!-- ✅ Add logo here -->
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Money Buddy Logo">
+    <h2>Money Buddy</h2>
+    <h3>Signup</h3>
+    <form method="POST">
+      <input type="text" name="username" placeholder="Username" required>
+      <input type="password" name="password" placeholder="Password" required>
+      <button type="submit">Signup</button>
+    </form>
+    <p>Already have an account? <a href="/login">Login</a></p>
+    <p class="quote">“A budget is telling your money where to go instead of wondering where it went.”</p>
+  </div>
+</body>
+</html>
