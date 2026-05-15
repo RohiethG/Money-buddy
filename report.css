@@ -1,0 +1,247 @@
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Montserrat", sans-serif;
+}
+
+body {
+  background: linear-gradient(to bottom, #0f3443, #34e89e);
+  color: #fff;
+  min-height: 100vh;
+}
+
+/* Navbar */
+.header {
+  position: fixed;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: auto;
+  padding: 15px;
+}
+
+.logo a {
+  font-size: 1.8rem;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.links {
+  display: flex;
+  gap: 25px;
+  list-style: none;
+}
+
+.links a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.links a:hover {
+  color: #ffea00;
+}
+
+.buttons a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: 600;
+  border: 1px solid white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background 0.3s;
+}
+
+.buttons a:hover {
+  background: #ffea00;
+  color: #333;
+}
+
+#menu-toggle, #hamburger-btn {
+  display: none;
+}
+
+/* Summary Section */
+.summary-section {
+  max-width: 1200px;
+  margin: 100px auto 40px;
+  text-align: center;
+}
+
+.summary-section h3 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.summary-cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px 30px;
+  border-radius: 12px;
+  text-align: center;
+  width: 220px;
+  transition: 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card:hover {
+  background: #ffea00;
+  color: #333;
+}
+
+.card h4 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.card p {
+  font-size: 1.5rem;
+}
+
+.income {
+  border-left: 5px solid #00ff90;
+}
+
+.expense {
+  border-left: 5px solid #ff3b3f;
+}
+
+.balance {
+  border-left: 5px solid #ffea00;
+}
+
+/* Charts Section */
+.charts {
+  max-width: 1300px;
+  margin: 50px auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 30px;
+  padding: 20px;
+}
+
+.chart-container {
+  flex: 1 1 400px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  transition: 0.3s ease;
+}
+
+.chart-container:hover {
+  transform: scale(1.03);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.action-buttons a {
+  background: #ffea00;
+  color: #333;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: 0.3s ease;
+  border: none;
+}
+
+.action-buttons a:hover {
+  background: #fff200;
+  transform: translateY(-2px);
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  margin-top: 40px;
+  font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #hamburger-btn {
+    display: block;
+    cursor: pointer;
+  }
+
+  .links {
+    flex-direction: column;
+    display: none;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    margin-top: 10px;
+    padding: 10px 0;
+  }
+
+  #menu-toggle:checked ~ .links {
+    display: flex;
+  }
+
+  .buttons {
+    display: none;
+  }
+
+  .charts {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chart-container {
+    width: 90%;
+  }
+}
+.welcome-text {
+  font-size: 1.2rem;
+  margin-top: 15px;
+  color: #f1f1f1;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-shadow: 0px 2px 6px rgba(0, 0, 0, 0.4);
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
