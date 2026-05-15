@@ -1,0 +1,68 @@
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+Warning: PowerShell detected that you might be using a screen reader and has disabled PSReadLine for compatibility purposes. If you want to re-enable it, run 'Import-Module PSReadLine'.
+
+PS C:\WINDOWS\system32> cd D:\mca2sem\FSD\labprograms\money_buddy
+PS D:\mca2sem\FSD\labprograms\money_buddy> sqlite3 database.db
+sqlite3 : The term 'sqlite3' is not recognized as the name of a cmdlet, function, script file, or operable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ sqlite3 database.db
++ ~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (sqlite3:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS D:\mca2sem\FSD\labprograms\money_buddy> sqlite3 database.db
+sqlite3 : The term 'sqlite3' is not recognized as the name of a cmdlet, function, script file, or operable program.
+Check the spelling of the name, or if a path was included, verify that the path is correct and try again.
+At line:1 char:1
++ sqlite3 database.db
++ ~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (sqlite3:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+PS D:\mca2sem\FSD\labprograms\money_buddy> .\sqlite3.exe database.db
+SQLite version 3.50.4 2025-07-30 19:33:53
+Enter ".help" for usage hints.
+sqlite> .tables
+expenses  users
+sqlite> .schema users
+CREATE TABLE users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        );
+sqlite> .schema expenses
+CREATE TABLE expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            type TEXT CHECK(type IN ('income', 'expense')) NOT NULL,
+            amount REAL NOT NULL,
+            description TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, category TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+sqlite> SELECT * FROM users;
+1|rohieth|scrypt:32768:8:1$Mzoxnp0gIedgr9iA$3a4ea17f63550f2479da5bd6fecd169eec30cc829afbfa3fa8b221686f8b6e5b161f406c1a87705a1cffb4880cc20660c7101a44868f07f33fa1f4e2b7a6eca0
+2|nikitha|scrypt:32768:8:1$FJp0i2eNVhG8a3FO$6c727a9facb3dc2d207dac843f550c004e0b3c602944556f088ec7245b945e675e27f4cd9e1bab9a8670a2b29a165179cbd777216c9100b96047e259b2a532e1
+3|varsha|scrypt:32768:8:1$6j5QkDAtfcEJTS21$dd9b43d73886ae75550db14529d3bddfa1be266cab3d44d6e1a506f096eecbd64c41d824c7e5af5ceb0d22e7b083d1c365ec75326913d9e7afa7bc11b3d029fe
+sqlite> SELECT * FROM expenses;
+1|1|income|25000.0|salary|2025-08-08 07:28:39|
+2|1|expense|5000.0|food|2025-08-08 07:28:53|
+3|2|income|50000.0|10000|2025-08-08 07:36:39|
+4|2|expense|10000.0|food|2025-08-08 07:38:59|
+5|2|income|200.0|investement|2025-08-08|
+6|1|expense|6500.0|festival|2025-08-08|
+7|1|expense|1000.0|current_bill|2025-08-08|Uncategorized
+8|1|income|2000.0|investement|2025-08-09|Uncategorized
+9|1|expense|250.0|travel|2025-07-09|Other
+10|1|income|3000.0|investement|2025-08-08|Salary
+11|1|income|200.0|inveswtement|2025-08-27|Salary
+12|1|income|5000.0|investement|2024-12-03|Salary
+13|1|expense|50.0|pizza|2024-12-11|Food
+14|1|expense|25.0|rolls|2024-12-25|Food
+15|1|expense|500.0|jhg|2025-09-25|Food
+sqlite>
